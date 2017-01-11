@@ -82,13 +82,15 @@ module Worldbank =
             LendingType = v.Value
         }
 
+    [<XlFunctionHelp("This function will asynchronously return a list of countries")>]
     let getCountries(
                     [<XlArgHelp("Country Ids (optional, semicolon delimited list or a row/column range)")>] countryIds : string[] option,
                     [<XlArgHelp("Region Ids (optional, semicolon delimited list or a row/column range)")>] regionIds : string[] option,
                     [<XlArgHelp("IncomeLevel Ids (optional, semicolon delimited list or a row/column range)")>] incomeLevelIds : string[] option,
                     [<XlArgHelp("LendingType Ids (optional, semicolon delimited list or a row/column range)")>] lendingTypeIds : string[] option,
                     [<XlArgHelp("True if headers should be returned (optional, default is TRUE)")>] headers : bool option,
-                    [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option
+                    [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option,
+                    [<XlArgHelp("Timestamp to force refresh on recalc. You can use Excel Today() but not Now() (optional)")>] timestamp : DateTime option
                     ) =
         async  
             {
@@ -139,9 +141,11 @@ module Worldbank =
                     return XlTable.Empty
              }
 
+    [<XlFunctionHelp("This function will asynchronously return a list of income levels")>]
     let getIncomeLevels(
                         [<XlArgHelp("True if headers should be returned (optional, default is TRUE)")>] headers : bool option,
-                        [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option
+                        [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option,
+                        [<XlArgHelp("Timestamp to force refresh on recalc. You can use Excel Today() but not Now() (optional)")>] timestamp : DateTime option
                         ) =
         async  
             {
@@ -181,9 +185,11 @@ module Worldbank =
                     return XlTable.Empty
              }
 
+    [<XlFunctionHelp("This function will asynchronously return a list of lending types")>]
     let getLendingTypes(
                         [<XlArgHelp("True if headers should be returned (optional, default is TRUE)")>] headers : bool option,
-                        [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option
+                        [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option,
+                        [<XlArgHelp("Timestamp to force refresh on recalc. You can use Excel Today() but not Now() (optional)")>] timestamp : DateTime option
                         ) =
         async  
             {
@@ -223,11 +229,13 @@ module Worldbank =
                     return XlTable.Empty
              }
 
+    [<XlFunctionHelp("This function will asynchronously return a list of indicators")>]
     let getIndicators(
-                        [<XlArgHelp("Indicator Ids (optional, semicolon delimited list or a row/column range)")>] indicatorIds : string[] option,
-                        [<XlArgHelp("True if headers should be returned (optional, default is TRUE)")>] headers : bool option,
-                        [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option
-                        ) =
+                     [<XlArgHelp("Indicator Ids (optional, semicolon delimited list or a row/column range)")>] indicatorIds : string[] option,
+                     [<XlArgHelp("True if headers should be returned (optional, default is TRUE)")>] headers : bool option,
+                     [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option,
+                     [<XlArgHelp("Timestamp to force refresh on recalc. You can use Excel Today() but not Now() (optional)")>] timestamp : DateTime option
+                     ) =
         async  
             {
             let transposed = defaultArg transposed false
@@ -271,11 +279,15 @@ module Worldbank =
                     return XlTable.Empty
              }
 
+    [<XlFunctionHelp("This function will asynchronously return indicator data series for given countries and date range")>]
     let getIndicatorData(
                          [<XlArgHelp("Country Ids (semicolon delimited list or a row/column range)")>] countryIds : string[],
                          [<XlArgHelp("Indicator Id")>] indicatorId : string,
+                         [<XlArgHelp("From Date (optional), e.g. 2016, 2016M01, 2016Q1")>] fromDate : string option,
+                         [<XlArgHelp("To Date (optional), e.g. 2016, 2016M01, 2016Q1")>] toDate : string option,
                          [<XlArgHelp("True if headers should be returned (optional, default is TRUE)")>] headers : bool option,
-                         [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option
+                         [<XlArgHelp("True if table should be returned as transposed (optional, default is FALSE)")>] transposed : bool option,
+                         [<XlArgHelp("Timestamp to force refresh on recalc. You can use Excel Today() but not Now() (optional)")>] timestamp : DateTime option
                          ) =
         async  
             {
@@ -287,7 +299,12 @@ module Worldbank =
 
             let perPagePrm = Some ("per_page", "20000")
 
-            let query = [formatPrm; perPagePrm] |> List.choose id
+            let datePrm =
+                match fromDate, toDate with 
+                    | Some(fromDate), Some(toDate) -> Some ("date", sprintf "%s:%s" fromDate toDate)
+                    | _ -> None
+
+            let query = [formatPrm; perPagePrm; datePrm] |> List.choose id
 
             let indicatorDataUrl = getIndicatorDataUrl (countryIds |> String.concat ";") indicatorId
 
