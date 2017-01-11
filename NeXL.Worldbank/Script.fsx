@@ -3,6 +3,9 @@
 #r "../packages/NeXL/lib/net45/NeXL.ManagedXll.dll"
 #r "../packages/FSharp.Data/lib/net40/FSharp.Data.dll"
 #r "../packages/Newtonsoft.Json/lib/net45/Newtonsoft.Json.dll"
+#r "../packages/Deedle/lib/net40/Deedle.dll"
+
+#load "Types.fs"
 
 open NeXL.ManagedXll
 open NeXL.XlInterop
@@ -12,82 +15,46 @@ open System.Runtime.InteropServices
 open System.Data
 open FSharp.Data
 open FSharp.Data.JsonExtensions
+open FSharp.Data.HtmlExtensions
 open Newtonsoft.Json
 open Newtonsoft.Json.Linq
-
-[<XlInvisible>]
-type IdValue =
-    {
-     Id : string
-     Value : string
-    }
-
-[<XlInvisible>]
-type CountryResponse =
-    {
-     Id : string
-     Iso2Code : string
-     Name : string
-     Region : IdValue
-     AdminRegion : IdValue
-     IncomeLevel : IdValue
-     LendingType : IdValue
-     CapitalCity : string
-     Longitude : Nullable<decimal>
-     Latitude : Nullable<decimal>
-    }
-
-[<XlInvisible>]
-type Country =
-    {
-     Name : string
-     Id : string
-     Iso2Code : string
-     CapitalCity : string
-     Longitude : Nullable<decimal>
-     Latitude : Nullable<decimal>     
-     Region : string
-     AdminRegion : string
-     IncomeLevel : string
-     LendingType : string
-    }
-
-let toCountry (v : CountryResponse) : Country =
-    {
-        Name = v.Name
-        Id = v.Id
-        Iso2Code = v.Iso2Code
-        CapitalCity = v.CapitalCity
-        Longitude = v.Longitude
-        Latitude = v.Latitude
-        Region = v.Region.Value
-        AdminRegion = v.AdminRegion.Value
-        IncomeLevel = v.IncomeLevel.Value
-        LendingType = v.LendingType.Value
-    }
+open NeXL.Worldbank
+open Deedle
 
 let formatPrm = Some ("format", "json")
 
-let perPagePrm = Some ("per_page", "1000000")
+let perPagePrm = Some ("per_page", "10000")
 
 let query = [formatPrm; perPagePrm] |> List.choose id
 
-let response = Http.Request("http://api.worldbank.org/countries/dup", query, silentHttpErrors = true)
+let response = Http.Request("http://api.worldbank.org/countries/chn;br/indicators/SP.POP.TOTL", query, silentHttpErrors = true)
 
 let res =
     match response.Body with  
         | Text(json) -> 
             if response.StatusCode >= 400 then
-                //let err = JsonConvert.DeserializeObject<QuandlError>(json)
-                printfn "%s" json
+                let doc = HtmlDocument.Parse(json)
+                let body = doc.Body()
+                let err = body.Descendants ["p"] 
+                            |> Seq.map (fun v -> v.InnerText())
+                            |>  String.concat "."
+                printfn "%A" err
                 [||]
             else
-                printfn "%s" json
                 let json = JsonValue.Parse(json).AsArray().[1]
-                printfn "%s" (json.ToString())
-                let countries = JsonConvert.DeserializeObject<CountryResponse[]>(json.ToString()) |> Array.map toCountry
+                let countries = JsonConvert.DeserializeObject<IndicatorData[]>(json.ToString()) 
                 countries
                 //return XlTable.Create(countries, String.Empty, String.Empty, false, transposed, headers)
         | Binary(_) -> [||]
 
-response.Headers
+
+let frame = res |> Array.map (fun x -> x.Date, x.Country.Value, x.Value ) |> Frame.ofValues 
+
+let dates = frame.RowKeys |> Seq.toArray
+
+let x = frame.Rows.["2015"]
+let y = x.TryGet("China")
+
+let cols = frame.Columns
+
+cols.Keys |> Seq.toList

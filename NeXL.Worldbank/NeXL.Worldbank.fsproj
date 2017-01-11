@@ -54,10 +54,10 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="NeXL32bit_1_4_6.xll">
+    <Content Include="NeXL32bit_1_4_7.xll">
       <Paket>True</Paket>
     </Content>
-    <Content Include="NeXL64bit_1_4_6.xll">
+    <Content Include="NeXL64bit_1_4_7.xll">
       <Paket>True</Paket>
     </Content>
     <Compile Include="AssemblyInfo.fs" />
@@ -94,6 +94,17 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.6')">
+      <ItemGroup>
+        <Reference Include="Deedle">
+          <HintPath>..\packages\Deedle\lib\net40\Deedle.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And ($(TargetFrameworkVersion) == 'v3.5' Or $(TargetFrameworkVersion) == 'v4.0' Or $(TargetFrameworkVersion) == 'v4.5' Or $(TargetFrameworkVersion) == 'v4.5.2' Or $(TargetFrameworkVersion) == 'v4.6')">
       <ItemGroup>

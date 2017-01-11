@@ -8,3 +8,4 @@ nuget NetOffice.Core.Net45
 nuget NetOffice.Excel.Net45
 nuget DocumentFormat.OpenXml
 nuget Newtonsoft.Json
+nuget Deedle

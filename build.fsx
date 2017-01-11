@@ -36,7 +36,7 @@ let path64BitXll = Path.Combine(projDir, sprintf "NeXL64bit_%d_%d_%d.xll" nexlVe
 
 
 
-let nugetPackages = "NetOffice.Core.Net45 1.7.3.0 net45\r\nNetOffice.Excel.Net45 1.7.3.0 net45"
+let nugetPackages = "Deedle 1.2.5 net40\r\nNetOffice.Core.Net45 1.7.3.0 net45\r\nNetOffice.Excel.Net45 1.7.3.0 net45"
 let vcrtx64 = @"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x64\Microsoft.VC140.CRT"
 let vcrtx86 = @"C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\redist\x86\Microsoft.VC140.CRT"
 
