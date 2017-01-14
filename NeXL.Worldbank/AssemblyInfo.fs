@@ -1,4 +1,4 @@
-﻿namespace NeXL.Test.AssemblyInfo
+﻿namespace NeXL.Worldbank
 
 open System.Reflection
 open System.Runtime.CompilerServices

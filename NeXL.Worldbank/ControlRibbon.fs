@@ -1,4 +1,4 @@
-﻿namespace NeXL.Test
+﻿namespace NeXL.Worldbank
 open System
 open NeXL.ManagedXll
 open System.Runtime.InteropServices
