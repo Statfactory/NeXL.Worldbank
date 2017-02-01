@@ -10,4 +10,4 @@ NUGET
     NetOffice.Excel.Net45 (1.7.3)
       NetOffice.Core.Net45 (>= 1.7.3)
     Newtonsoft.Json (9.0.1)
-    NeXL (1.4.8)
+    NeXL (1.5)
