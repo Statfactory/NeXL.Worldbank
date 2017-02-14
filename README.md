@@ -7,6 +7,8 @@ License: Creative Commons 4.0 (https://creativecommons.org/licenses/by-nd/4.0/le
 
 Contact: nexl at statfactory.co.uk
 
+Follow on Twitter: @nexl_connector
+
 # How to build and use
 
 Running Fake target "Embed" will build a workbook "Worldbank.xlsm" (already included in this repo).
