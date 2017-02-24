@@ -9,6 +9,8 @@ Contact: nexl at statfactory.co.uk
 
 Follow on Twitter: @nexl_connector
 
+Blog: https://statfactory.wordpress.com/
+
 # How to build and use
 
 Running Fake target "Embed" will build a workbook "Worldbank.xlsm" (already included in this repo).
